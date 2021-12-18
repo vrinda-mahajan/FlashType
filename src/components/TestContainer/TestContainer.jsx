@@ -1,6 +1,6 @@
 import React from "react";
 import TryAgain from "../TryAgain/TryAgain";
-import TypingChallenge from "../TypingChallenge/TypingChallenge";
+import TypingChallengeContainer from "../TypingChallengeContainer/TypingChallengeContainer";
 import "./TestContainer.css";
 const TestContainer = ({words,characters,wpm}) => {
     return(
@@ -12,7 +12,7 @@ const TestContainer = ({words,characters,wpm}) => {
            wpm={wpm} />
            </div> */}
            <div data-aos="fade-up" className="typing-challenge">
-               <TypingChallenge 
+               <TypingChallengeContainer 
                 words={words} 
                 characters={characters} 
                 wpm={wpm} />

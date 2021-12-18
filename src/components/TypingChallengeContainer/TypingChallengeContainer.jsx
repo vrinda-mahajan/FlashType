@@ -1,17 +1,18 @@
 import React from "react";
-import "./TypingChallenge.css";
+import ChallengeDetailsCard from "../ChallengeDetailsCard/ChallengeDetailsCard";
+import "./TypingChallengeContainer.css";
 
-const TypingChallenge = ({words,characters,wpm}) => {
+const TypingChallengeContainer = ({words,characters,wpm}) => {
     return(
         <div className="typing-challenge-container">
             {/* Details Section */}
             <div className="details-container">
                 {/* Words typed */}
-                <p>Words</p>
+                <ChallengeDetailsCard cardName="Words" cardValue={words}/>
                 {/* Characters Typed */}
-                <p>Characters</p>
+                <ChallengeDetailsCard cardName="Characters" cardValue={characters}/>
                 {/* Speed */}
-                <p>Speed</p>
+                <ChallengeDetailsCard cardName="Speed" cardValue={wpm}/>
             </div>
             {/* The Real Challenge */}
             <div className="typewriter-container">
@@ -21,4 +22,4 @@ const TypingChallenge = ({words,characters,wpm}) => {
     );
 }
 
-export default TypingChallenge ;
+export default TypingChallengeContainer ;
