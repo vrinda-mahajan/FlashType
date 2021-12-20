@@ -3,21 +3,22 @@ import ChallengeSection from "../ChallengeSection/ChallengeSection";
 import Footer from "../Footer/Footer";
 import Landing from "../Landing/Landing";
 import Nav from "../Nav/Nav";
+import { SAMPLE_PARAGRAPHS } from "../../data/sampleParagraphs"
 import "./App.css";
 
 const TotalTime = 60;
 const ServiceUrl = "http://metaphorpsum.com/paragraphs/1/9";
-
+const DefaultState = {
+    selectedParagraph: "",
+    timeStarted: false,
+    timeRemaining: TotalTime,
+    testInfo:[],
+    words: 0,
+    characters: 0,
+    wpm: 0,
+}
 class App extends React.Component{
-    state = {
-        selectedParagraph: "",
-        timeStarted: false,
-        timeRemaining: 60,
-        testInfo:[],
-        words: 0,
-        characters: 0,
-        wpm: 0,
-    }
+    state = DefaultState ;
 
     startTimer = () => {
         this.setState({timeStarted:true})
@@ -32,6 +33,10 @@ class App extends React.Component{
             }
         },1000)
     };
+
+    startAgain =() =>{
+        this.fetchNewParagraphFallback();
+    }
 
     handleUserInput = (inputValue) => {
         if (!this.state.timeStarted){
@@ -72,8 +77,23 @@ class App extends React.Component{
 
         this.setState({testInfo,characters,words})
     }
-   
-    componentDidMount(){
+
+    fetchNewParagraphFallback = () => {
+        const data = SAMPLE_PARAGRAPHS[
+            Math.floor((Math.random() * SAMPLE_PARAGRAPHS.length))
+        ];
+
+        const selectedParagraphArray = data.split("") ;
+            const testInfo = selectedParagraphArray.map((selectedLetter)=>{
+            return {
+                testLetter: selectedLetter,
+                status : "notAttempted"
+            }
+        })
+        this.setState({...DefaultState, testInfo:testInfo, selectedParagraph:data})
+    }
+
+    fetchNewParagraph = () => {
         fetch(ServiceUrl)
         .then(response=>response.text())
         .then((data)=>{
@@ -85,9 +105,12 @@ class App extends React.Component{
                 status : "notAttempted"
             }
         })
-        this.setState({testInfo:testInfo,selectedParagraph:data})
+        this.setState({...DefaultState, testInfo:testInfo, selectedParagraph:data})
         });
-        
+    }
+
+    componentDidMount(){
+        this.fetchNewParagraphFallback();
     }
     
     render(){
@@ -107,7 +130,8 @@ class App extends React.Component{
                 wpm={this.state.wpm}
                 timeRemaining={this.state.timeRemaining}
                 timeStarted={this.state.timeStarted}
-                onInputChange={this.handleUserInput} />
+                onInputChange={this.handleUserInput}
+                startAgain={this.startAgain} />
                 {/* Footer */}
                 <Footer />
             </div>
