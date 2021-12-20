@@ -2,8 +2,7 @@ import React from "react";
 import TestLetter from "../TestLetter/TestLetter";
 import "./TypingChallenge.css";
 
-const TypingChallenge = ({ testInfo, selectedParagraph,timeRemaining, timeStarted }) =>{
-    console.log("Inside typing :" ,testInfo)
+const TypingChallenge = ({ testInfo, onInputChange,timeRemaining, timeStarted }) =>{
     return(
         <div className="typing-challenge">
             <div className="timer-container">
@@ -16,13 +15,13 @@ const TypingChallenge = ({ testInfo, selectedParagraph,timeRemaining, timeStarte
                 <div className="textarea-left">
                     <div className="textarea test-paragraph">
                         {/* {selectedParagraph} */}
-                        {testInfo.map((indvidualLetterInfo) => {
-                            return <TestLetter indvidualLetterInfo={indvidualLetterInfo} />
+                        {testInfo.map((indvidualLetterInfo,index) => {
+                            return <TestLetter key={index} indvidualLetterInfo={indvidualLetterInfo} />
                         })}
                     </div>
                 </div>
                 <div className="textarea-right">
-                    <textarea className="textarea" placeholder="Start typing here"></textarea>
+                    <textarea onChange={(e) => onInputChange(e.target.value)} className="textarea" placeholder="Start typing here"></textarea>
                 </div>
             </div>
         </div>

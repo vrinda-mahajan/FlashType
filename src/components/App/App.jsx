@@ -10,7 +10,7 @@ const ServiceUrl = "http://metaphorpsum.com/paragraphs/1/9";
 
 class App extends React.Component{
     state = {
-        selectedParagraph: "Hello World!",
+        selectedParagraph: "",
         timeStarted: false,
         timeRemaining: 60,
         testInfo:[],
@@ -18,21 +18,76 @@ class App extends React.Component{
         characters: 0,
         wpm: 0,
     }
+
+    startTimer = () => {
+        this.setState({timeStarted:true})
+        const timer = setInterval(()=>{
+            if(this.state.timeRemaining>0){
+                const timeSpent = TotalTime - this.state.timeRemaining;
+                const wpm = timeSpent>0 ? (this.state.words/timeSpent)*TotalTime : 0 ;
+                this.setState({timeRemaining : this.state.timeRemaining - 1,
+                wpm:parseInt(wpm),})
+            }else{
+                clearInterval(timer);
+            }
+        },1000)
+    };
+
+    handleUserInput = (inputValue) => {
+        if (!this.state.timeStarted){
+            this.startTimer();
+        }
+
+        const characters = inputValue.length;
+        const words = inputValue.split(" ").length;
+        const index = characters - 1;
+
+        if (index<0){
+             this.setState({
+                 testInfo: [
+                     {
+                         testLetter: this.state.testInfo[0].testLetter,
+                         status: "notAttempted",
+                     },
+                     ...this.state.testInfo.slice(1),
+                 ],
+                 characters,
+                 words
+             })
+             return;
+        }
+        if (index >= this.state.selectedParagraph.length){
+            this.setState({characters,words});
+            return ;
+        }
+
+        const testInfo = this.state.testInfo;
+        if(!(index=== this.state.selectedParagraph.length-1)){
+            testInfo[index+1].status="notAttempted";
+        }
+        
+        const isCorrect = inputValue[index] ===testInfo[index].testLetter;
+
+        testInfo[index].status= isCorrect ? "correct" : "incorrect";
+
+        this.setState({testInfo,characters,words})
+    }
    
     componentDidMount(){
-        // fetch(ServiceUrl)
-        // .then(response=>response.text())
-        // .then((data)=>{
-        //     this.setState({selectedParagraph:data})
-        // });
-        const selectedParagraphArray = this.state.selectedParagraph.split("") ;
-        const testInfo = selectedParagraphArray.map((selectedLetter)=>{
-        return {
-            testLetter: selectedLetter,
-            status : "notAttempted"
-        }
-    })
-    this.setState({testInfo:testInfo})
+        fetch(ServiceUrl)
+        .then(response=>response.text())
+        .then((data)=>{
+            this.setState({selectedParagraph:data})
+            const selectedParagraphArray = data.split("") ;
+            const testInfo = selectedParagraphArray.map((selectedLetter)=>{
+            return {
+                testLetter: selectedLetter,
+                status : "notAttempted"
+            }
+        })
+        this.setState({testInfo:testInfo,selectedParagraph:data})
+        });
+        
     }
     
     render(){
@@ -51,7 +106,8 @@ class App extends React.Component{
                 characters={this.state.characters}
                 wpm={this.state.wpm}
                 timeRemaining={this.state.timeRemaining}
-                timeStarted={this.state.timeStarted} />
+                timeStarted={this.state.timeStarted}
+                onInputChange={this.handleUserInput} />
                 {/* Footer */}
                 <Footer />
             </div>
